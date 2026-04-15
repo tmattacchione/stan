@@ -329,3 +329,10 @@ a:hover {
   padding: 2px 6px;
   font-size: 0.75rem;
 }
+
+.content-series-page .page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}

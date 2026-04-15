@@ -6,7 +6,7 @@ Or from backend: python scripts/seed_data.py
 """
 import random
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from pathlib import Path
 
 # Add backend to path so we can import app
@@ -62,7 +62,7 @@ def main():
             users.append(user)
 
     # Create random posts for each user
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     for user in users:
         n_posts = random.randint(5, 15)
         for _ in range(n_posts):
