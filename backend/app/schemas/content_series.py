@@ -1,6 +1,8 @@
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel
+from typing import List, Optional
+from pydantic import BaseModel, ConfigDict
+
+from app.schemas.post import PostResponse
 
 
 class ContentSeriesCreate(BaseModel):
@@ -14,19 +16,18 @@ class ContentSeriesResponse(BaseModel):
     root_scheduled_at: datetime
     owner_id: int
     created_at: Optional[datetime] = None
+    posts: List[ContentSeriesPostEntry] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ContentSeriesPostEntry(BaseModel):
     id: int
-    post_id: int
     position: int
-    scheduled_at: datetime
+    scheduled_at: Optional[datetime] = None
+    post: Optional[PostResponse] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ContentSeriesPostAdd(BaseModel):

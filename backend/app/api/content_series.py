@@ -31,7 +31,17 @@ async def create_content_series(
     db.add(series)
     await db.commit()
     await db.refresh(series)
-    return series
+
+    result = await db.execute(
+        select(ContentSeries)
+        .where(ContentSeries.id == series.id)
+        .options(
+            selectinload(ContentSeries.posts)
+            .selectinload(ContentSeriesPost.post)
+        )
+    )
+
+    return result.scalar_one();
 
 
 @router.get("", response_model=list[ContentSeriesResponse])
@@ -42,10 +52,16 @@ async def list_content_series(
     result = await db.execute(
         select(ContentSeries)
         .where(ContentSeries.owner_id == user_id)
-        .options(selectinload(ContentSeries.posts))
+        .options(
+            selectinload(ContentSeries.posts).selectinload(ContentSeriesPost.post)
+        )
         .order_by(ContentSeries.created_at.desc())
     )
-    return list(result.scalars().all())
+    series_list = result.scalars().all()
+    # Force load relationships (this fixes the MissingGreenlet)
+    for series in series_list:
+        series.posts  # trigger loading
+    return series_list
 
 
 @router.get("/{series_id}", response_model=ContentSeriesResponse)
@@ -57,11 +73,16 @@ async def get_content_series(
     result = await db.execute(
         select(ContentSeries)
         .where(ContentSeries.id == series_id, ContentSeries.owner_id == user_id)
-        .options(selectinload(ContentSeries.posts))
+        .options(
+            selectinload(ContentSeries.posts).selectinload(ContentSeriesPost.post)
+        )
     )
     series = result.scalar_one_or_none()
     if not series:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series not found")
+
+    # Force load to prevent MissingGreenlet
+    series.posts
     return series
 
 
@@ -165,9 +186,14 @@ async def add_post_to_series(
     result = await db.execute(
         select(ContentSeries)
         .where(ContentSeries.id == series_id)
-        .options(selectinload(ContentSeries.posts))
+        .options(
+            selectinload(ContentSeries.posts).selectinload(ContentSeriesPost.post)
+        )
     )
-    return result.scalar_one()
+    series = result.scalar_one_or_none()
+    if series:
+        series.posts  # force load
+    return series
 
 
 @router.delete("/{series_id}/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
