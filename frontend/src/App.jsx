@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import PostsList from "./pages/PostsList";
 import PostEdit from "./pages/PostEdit";
 import CalendarPage from "./pages/CalendarPage";
+import ContentSeriesList from "./pages/ContentSeriesList";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="posts/new" element={<PostEdit />} />
           <Route path="posts/:id/edit" element={<PostEdit />} />
           <Route path="calendar" element={<CalendarPage />} />
+          <Route path="series" element={<ContentSeriesList />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
