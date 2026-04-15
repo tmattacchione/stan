@@ -27,3 +27,9 @@ class ContentSeriesPostEntry(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ContentSeriesPostAdd(BaseModel):
+    post_id: int
+    position: int
+    scheduled_at: datetime
