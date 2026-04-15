@@ -66,4 +66,10 @@ export const contentSeriesApi = {
 
   // @note get one series with its posts
   get: (id) => api(`/content-series/${id}`),
+
+  addPost: (seriesId, data) =>
+    api(`/content-series/${seriesId}/posts`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };
