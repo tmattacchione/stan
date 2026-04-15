@@ -59,3 +59,20 @@ async def get_content_series(
     if not series:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series not found")
     return series
+
+
+@router.delete("/{series_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_content_series(
+    series_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user_id: Annotated[int, Depends(get_current_user_id)],
+):
+    result = await db.execute(
+        select(ContentSeries)
+        .where(ContentSeries.id == series_id, ContentSeries.owner_id == user_id)
+    )
+    series = result.scalar_one_or_none()
+    if not series:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series not found")
+    await db.delete(series)
+    await db.commit()
