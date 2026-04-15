@@ -17,3 +17,13 @@ class ContentSeriesResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ContentSeriesPostEntry(BaseModel):
+    id: int
+    post_id: int
+    position: int
+    scheduled_at: datetime
+
+    class Config:
+        from_attributes = True
